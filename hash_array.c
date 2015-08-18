@@ -28,15 +28,41 @@ void hash_array_push(hash_array_t *p, hash_entry *e) {
 
 #if PHP_API_VERSION <= 20131106
 static int hash_entry_cmp(const void *a, const void *b) {
-  if ((*((hash_entry **) a))->len < (*((hash_entry **) b))->len) { return -1; }
-  if ((*((hash_entry **) a))->len > (*((hash_entry **) b))->len) { return 1; }
-  else return memcmp((void *) (*((hash_entry **) a))->key, (void *) (*((hash_entry **) b))->key, (*((hash_entry **) a))->len);
+  size_t min;
+  if ((*((hash_entry **) a))->len < (*((hash_entry **) b))->len) { min = (*((hash_entry **) a))->len;  }
+  else min = (*((hash_entry **) b))->len;
+  switch (memcmp((void *) (*((hash_entry **) a))->key, (void *) (*((hash_entry **) b))->key, min)) {
+    case 0:
+      if ((*((hash_entry **) a))->len > (*((hash_entry **) b))->len) return 1;
+      else if ((*((hash_entry **) a))->len == (*((hash_entry **) b))->len) return 0;
+      else return -1;
+      break;
+    case -1:
+      return -1;
+      break;
+    case 1:
+      return 1;
+      break;
+  }
 }
 #else
 static int hash_entry_cmp(const void *a, const void *b) {
-  if ((*((hash_entry **) a))->key->len < (*((hash_entry **) b))->key->len) { return -1; }
-  if ((*((hash_entry **) a))->key->len > (*((hash_entry **) b))->key->len) { return 1; }
-  else return memcmp((void *) (*((hash_entry **) a))->key->val, (void *) (*((hash_entry **) b))->key->val, (*((hash_entry **) a))->key->len);
+  size_t min;
+  if ((*((hash_entry **) a))->key->len < (*((hash_entry **) b))->key->len) { min = (*((hash_entry **) a))->key->len;  }
+  else min = (*((hash_entry **) b))->key->len;
+  switch (memcmp((void *) (*((hash_entry **) a))->key->val, (void *) (*((hash_entry **) b))->key->val, min)) {
+    case 0:
+      if ((*((hash_entry **) a))->key->len > (*((hash_entry **) b))->key->len) return 1;
+      else if ((*((hash_entry **) a))->key->len == (*((hash_entry **) b))->key->len) return 0;
+      else return -1;
+      break;
+    case -1:
+      return -1;
+      break;
+    case 1:
+      return 1;
+      break;
+  }
 }
 #endif
 void hash_array_sort(hash_array_t *p) {

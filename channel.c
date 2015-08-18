@@ -80,12 +80,12 @@ PHP_METHOD(Channel, decode) {
 #endif
   php_leon_channel_decode(return_value, spec, payload, len);
 }
-void php_leon_channel_encode(smart_str *str, zval *spec, zval *payload) {
+PHP_LEON_API void php_leon_channel_encode(smart_str *str, zval *spec, zval *payload) {
   leon_encoder_t *encoder = encoder_ctor();
   encoder->buffer = str;
   encoder->string_index_type = LEON_EMPTY;
   write_data_with_spec(encoder, spec, payload);
-  // encoder_dtor(encoder);
+  encoder_dtor(encoder);
 }
 
 PHP_LEON_API void php_leon_channel_decode(zval *return_value, zval *spec, char *payload, size_t len) {

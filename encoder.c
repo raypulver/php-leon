@@ -443,9 +443,11 @@ void write_double(leon_encoder_t *encoder, double d, unsigned char type) {
     }
   }
 }
+void woop() {}
 void write_data_with_spec(leon_encoder_t *encoder, zval *spec, zval *payload) {
   unsigned char type = type_check(spec);
   unsigned char payload_type = type_check(payload);
+  woop();
 #if PHP_API_VERSION <= 20131106
   char *key, *prop;
   uint key_len, prop_len;
