@@ -443,11 +443,9 @@ void write_double(leon_encoder_t *encoder, double d, unsigned char type) {
     }
   }
 }
-void woop() {}
 void write_data_with_spec(leon_encoder_t *encoder, zval *spec, zval *payload) {
   unsigned char type = type_check(spec);
   unsigned char payload_type = type_check(payload);
-  woop();
 #if PHP_API_VERSION <= 20131106
   char *key, *prop;
   uint key_len, prop_len;
@@ -489,6 +487,7 @@ void write_data_with_spec(leon_encoder_t *encoder, zval *spec, zval *payload) {
       break;
     case LEON_ARRAY:
       spec_ht = Z_ARRVAL_P(spec);
+      if (payload_type != LEON_ARRAY) { zend_throw_exception(zend_exception_get_default(TSRMLS_C), "Received a non-array when an array was expected.", 0 TSRMLS_CC); return; }
 #if PHP_API_VERSION <= 20131106
       zend_hash_index_find(spec_ht, 0, (void **) &spec_first);;
       ht = Z_ARRVAL_P(payload);
@@ -532,6 +531,7 @@ void write_data_with_spec(leon_encoder_t *encoder, zval *spec, zval *payload) {
       break;
     case LEON_OBJECT:
       if (payload_type == LEON_OBJECT) {
+        if (payload_type != LEON_OBJECT && payload_type != LEON_NATIVE_OBJECT) { zend_throw_exception(zend_exception_get_default(TSRMLS_CC), "Was expected an associative array or object.", 0 TSRMLS_CC); return; }
         ht = Z_ARRVAL_P(payload);
         spec_ht = Z_ARRVAL_P(spec);
         ha = hash_array_ctor();
